@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Automation Agent — Playwright-powered browser automation control panel." />
+  <title>Automation Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     WELCOME SCREEN
+════════════════════════════════════════════════════ -->
+<div id="welcome-screen" class="screen screen--active">
+
+  <!-- Animated background log stream -->
+  <div class="bg-log-stream" aria-hidden="true" id="bg-log-stream"></div>
+  <!-- Dot grid overlay -->
+  <div class="dot-grid" aria-hidden="true"></div>
+
+  <div class="welcome-inner">
+
+    <!-- Top bar -->
+    <nav class="welcome-nav">
+      <div class="welcome-nav__brand">
+        <span class="welcome-nav__icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.25"/>
+            <circle cx="5" cy="5.5" r="1" fill="currentColor"/>
+            <circle cx="8" cy="5.5" r="1" fill="currentColor"/>
+            <circle cx="11" cy="5.5" r="1" fill="currentColor"/>
+            <rect x="3.5" y="8.5" width="9" height="1" rx="0.5" fill="currentColor"/>
+            <rect x="3.5" y="10.5" width="5.5" height="1" rx="0.5" fill="currentColor"/>
+          </svg>
+        </span>
+        <span>Automation Agent</span>
+      </div>
+      <div class="welcome-nav__right">
+        <span class="pill pill--dim">Playwright</span>
+        <span class="pill pill--dim">Node.js v22</span>
+        <span class="version-tag">v1.0</span>
+      </div>
+    </nav>
+
+    <!-- Hero content -->
+    <main class="welcome-hero">
+      <div class="welcome-hero__eyebrow">
+        <span class="status-pulse"></span>
+        <span>Ready to automate</span>
+      </div>
+
+      <h1 class="welcome-hero__title">
+        Browser<br />
+        <span class="welcome-hero__title--accent">Automation</span><br />
+        Agent.
+      </h1>
+
+      <p class="welcome-hero__sub">
+        Control, observe and automate any website.<br />
+        Real screenshots. Real logs. Real automation.
+      </p>
+
+      <!-- Feature pills -->
+      <div class="feature-grid" role="list">
+        <span class="feature-pill" role="listitem">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/></svg>
+          Open Browser
+        </span>
+        <span class="feature-pill" role="listitem">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Navigate URLs
+        </span>
+        <span class="feature-pill" role="listitem">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1"/><circle cx="6" cy="6" r="1.5" stroke="currentColor" stroke-width="1"/></svg>
+          Screenshots
+        </span>
+        <span class="feature-pill" role="listitem">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1.5" y="3.5" width="9" height="5" rx="1" stroke="currentColor" stroke-width="1"/><line x1="3" y1="6" x2="9" y2="6" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+          Detect Forms
+        </span>
+        <span class="feature-pill" role="listitem">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4h8M2 8h5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+          Fill Forms
+        </span>
+        <span class="feature-pill" role="listitem">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2" stroke="currentColor" stroke-width="1"/><path d="M6 1v1.5M6 9.5V11M1 6h1.5M9.5 6H11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+          Click Coords
+        </span>
+        <span class="feature-pill" role="listitem">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 9L5 4l2 3 1.5-2L10 9" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Execution Logs
+        </span>
+        <span class="feature-pill" role="listitem">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6V3l2 1.5L6 2l2 2.5L10 3v3l-4 4-4-4z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Scroll Pages
+        </span>
+      </div>
+
+      <!-- CTA -->
+      <button id="launch-btn" class="launch-btn" aria-label="Open Dashboard">
+        <span class="launch-btn__label">Open Dashboard</span>
+        <span class="launch-btn__arrow" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </button>
+    </main>
+
+    <!-- Bottom bar -->
+    <footer class="welcome-footer">
+      <span>Built with Playwright + Express</span>
+      <span id="welcome-clock"></span>
+    </footer>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     DASHBOARD SCREEN
+════════════════════════════════════════════════════ -->
+<div id="dashboard-screen" class="screen">
+
+  <!-- HEADER -->
+  <header class="header" role="banner">
+    <div class="container header__inner">
+      <div class="header__left">
+        <button id="back-btn" class="back-btn" aria-label="Back to welcome">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="header__brand">
+          <span class="header__icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.25"/>
+              <circle cx="5" cy="5.5" r="1" fill="currentColor"/>
+              <circle cx="8" cy="5.5" r="1" fill="currentColor"/>
+              <circle cx="11" cy="5.5" r="1" fill="currentColor"/>
+              <rect x="3.5" y="8.5" width="9" height="1" rx="0.5" fill="currentColor"/>
+              <rect x="3.5" y="10.5" width="5.5" height="1" rx="0.5" fill="currentColor"/>
+            </svg>
+          </span>
+          <h1 class="header__title">Automation Agent</h1>
+        </div>
+      </div>
+      <div class="header__meta">
+        <span id="status-badge" class="badge badge--idle" aria-live="polite">
+          <span class="badge__dot"></span>
+          <span class="badge__label">Idle</span>
+        </span>
+        <div class="header__divider"></div>
+        <span class="header__version">v1.0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main" role="main">
+    <div class="container">
+
+      <!-- URL INPUT -->
+      <section class="section" aria-labelledby="url-label">
+        <div class="section__header">
+          <span id="url-label" class="section__label">Target URL</span>
+          <span class="section__hint">Enter any website to automate</span>
+        </div>
+        <div class="url-bar">
+          <div class="url-bar__prefix" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/>
+              <path d="M6.5 1.5C6.5 1.5 9 4 9 6.5C9 9 6.5 11.5 6.5 11.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+              <path d="M6.5 1.5C6.5 1.5 4 4 4 6.5C4 9 6.5 11.5 6.5 11.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+              <line x1="1.5" y1="6.5" x2="11.5" y2="6.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <input
+            id="url-input"
+            class="url-bar__input"
+            type="url"
+            placeholder="https://example.com"
+            autocomplete="url"
+            spellcheck="false"
+            aria-label="Target URL"
+          />
+          <button id="run-btn" class="btn btn--primary" aria-label="Run automation agent">
+            <span class="btn__label">Run Agent</span>
+            <span class="btn__icon" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2.5 2L10 6L2.5 10V2Z" fill="currentColor"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <!-- DASHBOARD GRID -->
+      <div class="dashboard-grid">
+
+        <!-- LEFT: LOGS + STATUS -->
+        <div class="dashboard-col dashboard-col--left">
+
+          <!-- EXECUTION LOGS -->
+          <section class="card" aria-labelledby="logs-label">
+            <div class="card__header">
+              <div class="card__title-group">
+                <span class="card__icon card__icon--terminal" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <rect x="0.75" y="0.75" width="11.5" height="11.5" rx="2" stroke="currentColor" stroke-width="1.1"/>
+                    <path d="M3.5 4.5L5.5 6.5L3.5 8.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="7" y1="8.5" x2="10" y2="8.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <h2 id="logs-label" class="card__title">Execution Logs</h2>
+              </div>
+              <div class="card__actions">
+                <span id="log-count" class="chip">0 entries</span>
+                <button id="clear-logs-btn" class="btn btn--ghost btn--sm">Clear</button>
+              </div>
+            </div>
+            <div class="log-terminal" role="log" aria-label="Execution log output" aria-live="polite">
+              <div class="log-terminal__gutter" aria-hidden="true">
+                <span class="log-terminal__dot log-terminal__dot--r"></span>
+                <span class="log-terminal__dot log-terminal__dot--y"></span>
+                <span class="log-terminal__dot log-terminal__dot--g"></span>
+                <span class="log-terminal__cwd">~/agent</span>
+              </div>
+              <div id="log-output" class="log-output">
+                <div class="log-empty" id="log-empty-state">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.25"/>
+                    <path d="M7 8l3 3-3 3" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="13" y1="14" x2="17" y2="14" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+                  </svg>
+                  <p>Awaiting execution<span class="blink-cursor">_</span></p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- AGENT STATUS -->
+          <section class="card card--status" aria-labelledby="status-label">
+            <div class="card__header">
+              <div class="card__title-group">
+                <span class="card__icon" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/>
+                    <path d="M6.5 3.5V7l2 1.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <h2 id="status-label" class="card__title">Agent Status</h2>
+              </div>
+            </div>
+            <div class="status-grid">
+              <div class="status-item status-item--active" id="state-idle">
+                <div class="status-item__dot"></div>
+                <div>
+                  <div class="status-item__name">Idle</div>
+                  <div class="status-item__desc">Awaiting input</div>
+                </div>
+              </div>
+              <div class="status-item" id="state-running">
+                <div class="status-item__dot"></div>
+                <div>
+                  <div class="status-item__name">Running</div>
+                  <div class="status-item__desc">Executing automation</div>
+                </div>
+              </div>
+              <div class="status-item" id="state-completed">
+                <div class="status-item__dot"></div>
+                <div>
+                  <div class="status-item__name">Completed</div>
+                  <div class="status-item__desc">Run finished</div>
+                </div>
+              </div>
+              <div class="status-item" id="state-failed">
+                <div class="status-item__dot"></div>
+                <div>
+                  <div class="status-item__name">Failed</div>
+                  <div class="status-item__desc">Error occurred</div>
+                </div>
+              </div>
+            </div>
+            <div class="stats-row">
+              <div class="stat">
+                <span id="stat-duration" class="stat__value">—</span>
+                <span class="stat__label">Duration</span>
+              </div>
+              <div class="stat">
+                <span id="stat-actions" class="stat__value">0</span>
+                <span class="stat__label">Actions</span>
+              </div>
+              <div class="stat">
+                <span id="stat-errors" class="stat__value">0</span>
+                <span class="stat__label">Errors</span>
+              </div>
+              <div class="stat">
+                <span id="stat-screenshots" class="stat__value">0</span>
+                <span class="stat__label">Captures</span>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- RIGHT: SCREENSHOT -->
+        <div class="dashboard-col dashboard-col--right">
+          <section class="card card--screenshot" aria-labelledby="screenshot-label">
+            <div class="card__header">
+              <div class="card__title-group">
+                <span class="card__icon" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <rect x="0.75" y="2" width="11.5" height="9" rx="1.5" stroke="currentColor" stroke-width="1.1"/>
+                    <circle cx="6.5" cy="6.5" r="1.75" stroke="currentColor" stroke-width="1"/>
+                    <circle cx="10.5" cy="3.5" r="0.6" fill="currentColor"/>
+                  </svg>
+                </span>
+                <h2 id="screenshot-label" class="card__title">Screenshot Preview</h2>
+              </div>
+              <div class="card__actions">
+                <span id="screenshot-timestamp" class="chip chip--muted" style="display:none;"></span>
+                <button id="download-btn" class="btn btn--ghost btn--sm" style="display:none;">↓ Save</button>
+              </div>
+            </div>
+            <div class="screenshot-viewport" id="screenshot-viewport">
+              <div class="screenshot-empty" id="screenshot-empty">
+                <div class="screenshot-empty__icon" aria-hidden="true">
+                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                    <rect x="3" y="6" width="30" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="18" cy="18" r="5.5" stroke="currentColor" stroke-width="1.25"/>
+                    <circle cx="29" cy="9.5" r="2" stroke="currentColor" stroke-width="1.25"/>
+                    <line x1="18" y1="12.5" x2="18" y2="18" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+                    <circle cx="18" cy="18" r="1" fill="currentColor"/>
+                  </svg>
+                </div>
+                <p class="screenshot-empty__title">No capture yet</p>
+                <p class="screenshot-empty__sub">Run the agent to see a live preview of the automated browser.</p>
+              </div>
+              <img id="screenshot-img" class="screenshot-img" src="" alt="Browser screenshot" style="display:none;" />
+            </div>
+            <div class="capture-strip" id="capture-strip" style="display:none;">
+              <div class="capture-strip__inner" id="capture-strip-inner"></div>
+            </div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="container footer__inner">
+      <span>Playwright · Node.js · Express</span>
+      <span id="footer-time"></span>
+    </div>
+  </footer>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
