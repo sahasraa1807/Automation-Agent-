@@ -15,23 +15,55 @@ import fs from 'fs';
 import cors from 'cors';
 
 // ─── BROWSER DETECTION (cross-platform) ─────────────────
-// 1. Try Playwright's own downloaded Chromium  → works on Linux / Render / Railway
-// 2. Fall back to system Chrome / Edge         → works on Windows locally
+// Strategy 1: Search Playwright's cache dirs for chrome-headless-shell or chrome (Linux/Render)
+// Strategy 2: Try playwright-core's executablePath()
+// Strategy 3: Known system paths (Windows local)
 
-let BROWSER_EXEC = null;
+function findBrowser() {
+  // ── Strategy 1: scan Playwright cache dirs ──────────────
+  const home = process.env.HOME || process.env.USERPROFILE || '';
+  const cacheRoots = [
+    process.env.PLAYWRIGHT_BROWSERS_PATH,
+    '/opt/render/.cache/ms-playwright',
+    '/ms-playwright',
+    path.join(home, '.cache', 'ms-playwright'),
+  ].filter(Boolean);
 
-// Try playwright-core's built-in executable path (set after `npx playwright install chromium`)
-try {
-  const pwPath = chromium.executablePath();
-  if (pwPath && fs.existsSync(pwPath)) {
-    BROWSER_EXEC = pwPath;
-    console.log(`  Using Playwright browser: ${BROWSER_EXEC}`);
+  const binNames = ['chrome-headless-shell', 'chrome', 'chromium'];
+
+  for (const root of cacheRoots) {
+    try {
+      if (!fs.existsSync(root)) continue;
+      // Walk one level of subdirectories (e.g. chromium_headless_shell-1223/)
+      const entries = fs.readdirSync(root, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory()) continue;
+        const sub = path.join(root, entry.name);
+        const subEntries = fs.readdirSync(sub, { withFileTypes: true });
+        for (const subEntry of subEntries) {
+          if (!subEntry.isDirectory()) continue;
+          for (const bin of binNames) {
+            const candidate = path.join(sub, subEntry.name, bin);
+            if (fs.existsSync(candidate)) return candidate;
+          }
+          // Also check directly inside subEntry
+          for (const bin of binNames) {
+            const candidate = path.join(sub, bin);
+            if (fs.existsSync(candidate)) return candidate;
+          }
+        }
+      }
+    } catch (_) {}
   }
-} catch (_) {}
 
-// Fall back to system installs (Windows)
-if (!BROWSER_EXEC) {
-  const SYSTEM_PATHS = [
+  // ── Strategy 2: playwright-core's own path ───────────────
+  try {
+    const p = chromium.executablePath();
+    if (p && fs.existsSync(p)) return p;
+  } catch (_) {}
+
+  // ── Strategy 3: system installs ─────────────────────────
+  const systemPaths = [
     'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
     (process.env.LOCALAPPDATA || '') + '\\Google\\Chrome\\Application\\chrome.exe',
@@ -41,14 +73,16 @@ if (!BROWSER_EXEC) {
     '/usr/bin/chromium-browser',
     '/usr/bin/chromium',
   ];
-  BROWSER_EXEC = SYSTEM_PATHS.find(p => { try { return fs.existsSync(p); } catch { return false; } }) || null;
-  if (BROWSER_EXEC) console.log(`  Using system browser: ${BROWSER_EXEC}`);
+  return systemPaths.find(p => { try { return fs.existsSync(p); } catch { return false; } }) || null;
 }
+
+const BROWSER_EXEC = findBrowser();
 
 if (!BROWSER_EXEC) {
   console.error('ERROR: No browser found. Run: npx playwright install chromium');
   process.exit(1);
 }
+console.log(`  Browser → ${BROWSER_EXEC}`);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
