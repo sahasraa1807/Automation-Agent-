@@ -14,25 +14,41 @@ import path from 'path';
 import fs from 'fs';
 import cors from 'cors';
 
-// ─── FIND SYSTEM BROWSER ────────────────────────────────
-// Uses your existing Chrome or Edge install — no download needed.
-const BROWSER_PATHS = [
-  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-  'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-  process.env.LOCALAPPDATA + '\\Google\\Chrome\\Application\\chrome.exe',
-  'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
-  'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
-];
+// ─── BROWSER DETECTION (cross-platform) ─────────────────
+// 1. Try Playwright's own downloaded Chromium  → works on Linux / Render / Railway
+// 2. Fall back to system Chrome / Edge         → works on Windows locally
 
-const BROWSER_EXEC = BROWSER_PATHS.find(p => {
-  try { return fs.existsSync(p); } catch { return false; }
-});
+let BROWSER_EXEC = null;
+
+// Try playwright-core's built-in executable path (set after `npx playwright install chromium`)
+try {
+  const pwPath = chromium.executablePath();
+  if (pwPath && fs.existsSync(pwPath)) {
+    BROWSER_EXEC = pwPath;
+    console.log(`  Using Playwright browser: ${BROWSER_EXEC}`);
+  }
+} catch (_) {}
+
+// Fall back to system installs (Windows)
+if (!BROWSER_EXEC) {
+  const SYSTEM_PATHS = [
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    (process.env.LOCALAPPDATA || '') + '\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+    'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+  ];
+  BROWSER_EXEC = SYSTEM_PATHS.find(p => { try { return fs.existsSync(p); } catch { return false; } }) || null;
+  if (BROWSER_EXEC) console.log(`  Using system browser: ${BROWSER_EXEC}`);
+}
 
 if (!BROWSER_EXEC) {
-  console.error('ERROR: No Chrome or Edge found. Install Chrome and retry.');
+  console.error('ERROR: No browser found. Run: npx playwright install chromium');
   process.exit(1);
 }
-console.log(`  Using browser: ${BROWSER_EXEC}`);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -130,8 +146,11 @@ app.get('/api/run', async (req, res) => {
     log('info', `Starting automation for: ${targetUrl}`);
 
     // ── Launch browser ──────────────────────────────
-    log('info', 'Launching Playwright browser (system Chrome, headless)');
-    browser = await chromium.launch({ headless: true, executablePath: BROWSER_EXEC });
+    log('info', `Launching browser: ${BROWSER_EXEC}`);
+    browser = await chromium.launch({
+      headless: true,
+      ...(BROWSER_EXEC ? { executablePath: BROWSER_EXEC } : {}),
+    });
     action('Browser launched');
 
     const context = await browser.newContext({
@@ -246,6 +265,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 // ─── START ───────────────────────────────────────────────
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`\n  Automation Agent server running`);
   console.log(`  Dashboard →  http://localhost:${PORT}`);
