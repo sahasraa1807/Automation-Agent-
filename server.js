@@ -52,7 +52,6 @@ if (!BROWSER_EXEC) {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = 3000;
 
 // ─── MIDDLEWARE ──────────────────────────────────────────
 app.use(cors());
