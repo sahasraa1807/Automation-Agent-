@@ -57,3 +57,7 @@ package.json    # Dependencies
 | `UNABLE_TO_VERIFY_LEAF_SIGNATURE` | Use `npm install --strict-ssl=false` |
 | `EAI_AGAIN cdn.playwright.dev` | Already handled — uses your system Chrome |
 | Dashboard not loading | Make sure `node server.js` is running first |
+
+
+##Deployed link
+https://automation-agent-1-y6m3.onrender.com
